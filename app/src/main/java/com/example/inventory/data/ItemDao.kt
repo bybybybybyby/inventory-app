@@ -8,8 +8,14 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Database access object to access the Inventory database
+ */
 @Dao
 interface ItemDao {
+
+    // Specify the conflict strategy as IGNORE, when the user tries to add an
+    // existing Item into the database.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(item: Item)
 

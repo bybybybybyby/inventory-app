@@ -4,6 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
+/**
+ * Entity data class represents a single row in the database.
+ */
 @Entity(tableName = "item")
 data class Item(
     @PrimaryKey(autoGenerate = true)

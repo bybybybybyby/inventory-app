@@ -3,33 +3,48 @@ package com.example.inventory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.example.inventory.data.ItemDao
 import com.example.inventory.data.Item
+import com.example.inventory.data.ItemDao
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 
-@Entity
-data class Item(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    @ColumnInfo(name = "name")
-    val itemName: String,
-    @ColumnInfo(name = "price")
-    val itemPrice: Double,
-    @ColumnInfo(name = "quantity")
-    val quantityInStock: Int
-)
 
+/**
+ * View Model to keep a reference to the Inventory repository and an up-to-date list of all items.
+ *
+ */
 class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
+
+    /**
+     * Inserts the new Item into database.
+     */
+    fun addNewItem(itemName: String, itemPrice: String, itemCount: String) {
+        val newItem = getNewItemEntry(itemName, itemPrice, itemCount)
+        insertItem(newItem)
+    }
+
+    /**
+     * Launching a new coroutine to insert an item in a non-blocking way
+     */
     private fun insertItem(item: Item) {
         viewModelScope.launch {
             itemDao.insert(item)
         }
     }
 
+    /**
+     * Returns true if the EditTexts are not empty
+     */
+    fun isEntryValid(itemName: String, itemPrice: String, itemCount: String): Boolean {
+        if (itemName.isBlank() || itemPrice.isBlank() || itemCount.isBlank()) {
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Returns an instance of the [Item] entity class with the item info entered by the user.
+     * This will be used to add a new entry to the Inventory database.
+     */
     private fun getNewItemEntry(itemName: String, itemPrice: String, itemCount: String): Item {
         return Item(
             itemName = itemName,
@@ -38,20 +53,11 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
         )
     }
 
-    fun addNewItem(itemName: String, itemPrice: String, itemCount: String) {
-        val newItem = getNewItemEntry(itemName, itemPrice, itemCount)
-        insertItem(newItem)
-    }
-
-    fun isEntryValid(itemName: String, itemPrice: String, itemCount: String): Boolean {
-        if (itemName.isBlank() || itemPrice.isBlank() || itemCount.isBlank()) {
-            return false
-        }
-        return true
-    }
-
 }
 
+/**
+ * Factory class to instantiate the [ViewModel] instance.
+ */
 class InventoryViewModelFactory(private val itemDao: ItemDao) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(InventoryViewModel::class.java)) {
