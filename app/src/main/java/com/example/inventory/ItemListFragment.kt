@@ -56,13 +56,18 @@ class ItemListFragment : Fragment() {
             val action = ItemListFragmentDirections.actionItemListFragmentToItemDetailFragment(it.id)
             this.findNavController().navigate(action)
             }
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
         binding.recyclerView.adapter = adapter
+
+        // Attach an observer on the allItems list to update the UI automatically when the data
+        // changes.
         viewModel.allItems.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 adapter.submitList(it)
             }
         }
-        binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
+
         binding.floatingActionButton.setOnClickListener {
             val action = ItemListFragmentDirections.actionItemListFragmentToAddItemFragment(
                 getString(R.string.add_fragment_title)

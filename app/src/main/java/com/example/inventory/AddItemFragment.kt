@@ -35,9 +35,6 @@ import com.example.inventory.databinding.FragmentAddItemBinding
  */
 class AddItemFragment : Fragment() {
 
-    private val navigationArgs: ItemDetailFragmentArgs by navArgs()
-    lateinit var item: Item
-
     // Use the 'by activityViewModels()' Kotlin property delegate from the fragment-ktx artifact
     // to share the ViewModel across fragments.
     private val viewModel: InventoryViewModel by activityViewModels {
@@ -47,12 +44,19 @@ class AddItemFragment : Fragment() {
         )
     }
 
+    private val navigationArgs: ItemDetailFragmentArgs by navArgs()
+
+    lateinit var item: Item
+
     // Binding object instance corresponding to the fragment_add_item.xml layout
     // This property is non-null between the onCreateView() and onDestroyView() lifecycle callbacks,
     // when the view hierarchy is attached to the fragment
     private var _binding: FragmentAddItemBinding? = null
     private val binding get() = _binding!!
 
+    /**
+     * Binds views with the passed in [item] information.
+     */
     private fun bind(item: Item) {
         val price = "%.2f".format(item.itemPrice)
         binding.apply {
@@ -120,6 +124,9 @@ class AddItemFragment : Fragment() {
         }
     }
 
+    /**
+     * Updates an existing Item in the database and navigates up to list fragment.
+     */
     private fun updateItem() {
         if (isEntryValid()) {
             viewModel.updateItem(
